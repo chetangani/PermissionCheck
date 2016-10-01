@@ -8,6 +8,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -36,11 +37,7 @@ public class MainActivity extends AppCompatActivity {
         checkbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkPermission()) {
-                    Toast.makeText(MainActivity.this, "All Permissions Granted Successfully", Toast.LENGTH_SHORT).show();
-                } else {
-                    requestPermission();
-                }
+                checkPermissionsMandAbove();
             }
         });
     }
@@ -82,25 +79,35 @@ public class MainActivity extends AppCompatActivity {
         -----------------------------------------------------------------------------------  */
 
     @TargetApi(23)
-    private void requestPermission() {
+    public void checkPermissionsMandAbove() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]
-                    {
-                            CAMERA,
-                            READ_CONTACTS,
-                            READ_PHONE_STATE,
-                            WRITE_EXTERNAL_STORAGE,
-                            ACCESS_FINE_LOCATION,
-                            RECORD_AUDIO,
-                            BODY_SENSORS,
-                            READ_CALENDAR,
-                            READ_SMS
-                    }, RequestPermissionCode);
+            if (checkPermission()) {
+                Toast.makeText(MainActivity.this, "All Permissions Granted", Toast.LENGTH_SHORT).show();
+            } else {
+                requestPermission();
+            }
         } else {
             Toast.makeText(MainActivity.this, "Below M, permissions not via code", Toast.LENGTH_SHORT).show();
         }
     }
 
+    @TargetApi(23)
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]
+                {
+                        CAMERA,
+                        READ_CONTACTS,
+                        READ_PHONE_STATE,
+                        WRITE_EXTERNAL_STORAGE,
+                        ACCESS_FINE_LOCATION,
+                        RECORD_AUDIO,
+                        BODY_SENSORS,
+                        READ_CALENDAR,
+                        READ_SMS
+                }, RequestPermissionCode);
+    }
+
+    @TargetApi(23)
     private boolean checkPermission() {
         int FirstPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA);
         int SecondPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(), READ_CONTACTS);
@@ -122,8 +129,9 @@ public class MainActivity extends AppCompatActivity {
                 NinthPermissionResult == PackageManager.PERMISSION_GRANTED;
     }
 
+    @TargetApi(23)
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case RequestPermissionCode:
                 if (grantResults.length > 0) {
